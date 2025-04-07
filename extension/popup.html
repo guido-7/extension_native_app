@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Aggiungi Bookmark al PDF</title>
+    <style>
+        body { font-family: sans-serif; padding: 10px; }
+        input { margin-bottom: 5px; width: 100%; padding: 5px; }
+        button { margin-top: 5px; padding: 5px 10px; }
+        #message { margin-top: 10px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h3>Aggiungi Bookmark al PDF</h3>
+    <input id="bookmark-name" type="text" placeholder="Titolo del bookmark" />
+    <input id="bookmark-page" type="number" placeholder="Pagina (es. 3)" />
+    <button id="send-button">Aggiungi Bookmark</button>
+    <div id="message" style="margin-top: 10px;"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

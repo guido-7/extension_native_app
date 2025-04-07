@@ -1,0 +1,9 @@
+{
+  "name": "com.guido.bookmarker",
+  "description": "App nativa per aggiungere bookmark ai PDF",
+  "path": "C:\\Users\\Guido\\Desktop\\appBookMarks\\native_app\\native_app.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://dmpdkmcjjaimonbodehnndmcplgenabd/"
+  ]
+}

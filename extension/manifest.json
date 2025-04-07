@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "PDF Bookmark Adder",
+    "version": "1.0",
+    "description": "Aggiunge bookmark a PDF tramite comunicazione con app nativa",
+    "permissions": ["nativeMessaging", "tabs"],
+    "action": {
+      "default_popup": "popup.html"
+    }
+}

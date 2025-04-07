@@ -1,0 +1,10 @@
+# Native App set
+
+in HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Edge\NativeMessagingHosts\
+e HKEY_CURRENT_USER\SOFTWARE\Google\Chrome\NativeMessagingHosts\
+e HKEY_LOCAL_MACHINE\SOFTWARE\Google\Chrome\NativeMessagingHosts\
+com.guido.bookmarker
+C:\Users\Guido\Desktop\appBookMarks\native_app\com.guido.bookmarker.json
+
+more info:
+- https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/native-messaging?tabs=v3%2Cwindows#step-1-add-permissions-to-the-extension-manifest
