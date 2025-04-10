@@ -6,9 +6,9 @@ import json
 import struct
 import os
 import logging
-import traceback
 from pypdf import PdfReader, PdfWriter  # Importa da pypdf
 from pypdf.errors import PdfReadError
+from pypdf.generic import Destination, Fit
 
 # --- Configurazione del Logging ---
 # Crea un file di log nella directory home dell'utente per un accesso facile
@@ -119,11 +119,38 @@ def bookmark_exists_on_page(reader: PdfReader, page_zero_indexed: int) -> bool:
         logging.warning(f"Errore durante la verifica dei bookmark esistenti: {e}")
     return False
 
+def create_structure(reader, outlines, title, page_index, parent=None, ):
+    if parent is None:
+        page_obj = reader.pages[page_index]
+        new_outline = Destination(title=title, page=page_obj , fit=Fit(fit_type="/Fit"))
+        outlines.append(new_outline)
+
+        def get_page_number(dest):
+            try:
+                return reader.get_page_number(dest.page)
+            except Exception:
+                return float("inf")  # Se non si riesce, lo mettiamo in fondo
+
+        # Ordina la lista principale mantenendo l’ordine originale dei nidificati
+        outlines.sort(key=lambda d: get_page_number(d) if isinstance(d, Destination) else float("inf"))
+        return outlines
+    return None
+
+def insert_bookmark(reader: PdfReader, writer: PdfWriter, item, parent=None):
+    """Copia un bookmark esistente in un nuovo writer."""
+    if isinstance(item, list):
+        # Se l'item è una lista, è un bookmark nidificato
+        for sub_item in item:
+            insert_bookmark(reader, writer, sub_item, parent)
+    elif isinstance(item, dict):
+        # Se l'item è un dizionario, è un bookmark semplice
+        page_index = reader.get_page_number(item.page)  # Potrebbe non funzionare per tutti i tipi di destinazione
+        writer.add_outline_item(title=item.title, page_number=page_index, parent=parent)
 
 def add_bookmark_to_pdf(pdf_path, bookmark_title, page_zero_indexed):
     """Aggiunge un bookmark a un file PDF usando pypdf."""
-    output_path_final = pdf_path.replace(".pdf", "_modified.pdf")
-    output_path_temp = pdf_path.replace(".pdf", "_modified_temp.pdf")
+    output_path_final = pdf_path
+    output_path_temp = pdf_path.replace(".pdf", "_temp.pdf")
 
     try:
         logging.info(f"Tentativo di aggiungere bookmark '{bookmark_title}' a pagina indice {page_zero_indexed} del file: {pdf_path}")
@@ -161,10 +188,15 @@ def add_bookmark_to_pdf(pdf_path, bookmark_title, page_zero_indexed):
         #     # Decidi se questo è un errore o solo un avviso
         #     # return False, msg # Scommenta per bloccare se esiste già
 
+        outlines = create_structure(reader, reader.outline, bookmark_title, page_zero_indexed)
+
+        # Inserisce gli outline nel nuovo pdf
+        insert_bookmark(reader=reader, writer=writer, item=outlines)
+
         # Aggiunge il nuovo bookmark (outline item)
         logging.debug(f"Aggiungo bookmark '{bookmark_title}' a pagina indice {page_zero_indexed}")
         # Il metodo add_outline_item è quello corretto in pypdf > 2.11
-        writer.add_outline_item(title=bookmark_title, page_number=page_zero_indexed, parent=None)
+        #writer.add_outline_item(title=bookmark_title, page_number=page_zero_indexed, parent=None)
 
         # Scrive il PDF modificato su un file temporaneo
         logging.debug(f"Scrivo modifiche su file temporaneo: {output_path_temp}")
